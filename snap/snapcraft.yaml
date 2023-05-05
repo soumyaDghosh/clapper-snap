@@ -10,6 +10,12 @@ architectures:
   - build-on: arm64
   - build-on: armhf
 parts:
+  autotool-parameters:
+    plugin: nil
+    autotools-configure-parameters: &prm
+      - --prefix=/usr
+      - --enable-shared
+      - --disable-static
   gtuber:
     source: https://github.com/Rafostar/gtuber.git
     plugin: meson
@@ -56,10 +62,7 @@ parts:
   libmpeg2:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
-    autotools-configure-parameters: &prm
-      - --prefix=/usr
-      - --enable-shared
-      - --disable-static
+    autotools-configure-parameters: *prm
     override-pull: |
       craftctl default
       patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
