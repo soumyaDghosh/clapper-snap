@@ -1,0 +1,228 @@
+name: clapper # you probably want to 'snapcraft register <name>'
+base: core22 # the base snap is the execution environment for this snap
+version: '0.5.2' # just for humans typically '1.2+git' or '1.3.2'
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+icon: com.github.rafostar.Clapper.svg
+adopt-info: clapper
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+parts:
+  gtuber:
+    source: https://github.com/Rafostar/gtuber.git
+    plugin: meson
+    meson-parameters:
+      - --prefix=/usr
+      - -Dintrospection=disabled
+      - -Dvapi=disabled
+      - -Dgst-gtuber=enabled      
+  ffmpeg:
+    source: https://git.ffmpeg.org/ffmpeg.git
+    source-tag: n4.4
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --disable-debug
+      - --disable-doc
+      - --disable-static
+      - --disable-everything
+      - --enable-gpl
+      - --enable-version3
+      - --enable-shared
+      - --enable-optimizations
+      - --enable-runtime-cpudetect
+      - --enable-pthreads
+      - --enable-protocol=file
+      - --enable-decoder=dvvideo,flv,h263,h264,hevc,mjpeg,mpeg2video,mpeg4,mpegvideo,msmpeg4v1,msmpeg4v2,png,tiff,vc1,vp8,vp9,webp,wmv1,wmv2,wmv3,zerocodec
+      - --enable-decoder=aac,aac_fixed,aac_latm,ac3,ac3_fixed,ape,dca,dvaudio,eac3,flac,mp3,opus,tak,truehd,tta,wmalossless
+      - --enable-demuxer=ape,gif,yuv4mpegpipe
+    build-packages:
+      - nasm
+      - libgnutls28-dev
+      - libmp3lame-dev
+      - libvorbis-dev
+    stage-packages:
+      - libmp3lame0
+    stage:
+      - -usr/include
+      - -usr/lib/ffmpeg/examples
+  libdvdcss:
+    source: https://code.videolan.org/videolan/libdvdcss.git
+    source-tag: 1.4.2
+    plugin: autotools
+    autotools-configure-parameters: *prm
+  libmpeg2:
+    source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
+    plugin: autotools
+    autotools-configure-parameters: &prm
+      - --prefix=/usr
+      - --enable-shared
+      - --disable-static
+    prime:
+      - -usr/bin/*mpeg2*
+  liba52:
+    source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
+    plugin: autotools
+    override-pull: |
+      craftctl default
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
+    autotools-configure-parameters: *prm
+    prime:
+      - -usr/bin/*a52*
+  gstreamer:
+    source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
+    source-tag: 1.22.2
+    source-submodules: []
+    plugin: meson
+    meson-parameters:
+      - --buildtype=release
+      - --wrap-mode=nodownload
+      - -Dbase=enabled
+      - -Dgood=enabled
+      - -Dbad=enabled
+      - -Dugly=enabled
+      - -Dlibav=enabled
+      - -Dvaapi=enabled
+      - -Dsharp=disabled
+      - -Drs=disabled
+      - -Dpython=disabled
+      - -Ddevtools=disabled
+      - -Dges=disabled
+      - -Drtsp_server=disabled
+      - -Dgst-examples=disabled
+      - -Dqt5=disabled
+      - -Dtests=disabled
+      - -Dexamples=disabled
+      - -Dintrospection=enabled
+      - -Ddoc=disabled
+      - -Dgtk_doc=disabled
+      - -Dgpl=enabled
+      - -Dgstreamer:benchmarks=disabled
+      - -Dgstreamer:gobject-cast-checks=disabled
+      - -Dgstreamer:glib-asserts=disabled
+      - -Dgstreamer:glib-checks=disabled
+      - -Dgstreamer:extra-checks=disabled
+      - -Dgst-plugins-base:gobject-cast-checks=disabled
+      - -Dgst-plugins-base:glib-asserts=disabled
+      - -Dgst-plugins-base:glib-checks=disabled
+      - -Dgst-plugins-base:gl_api=openglgles2
+      - -Dgst-plugins-base:gl_platform=eglglx
+      - -Dgst-plugins-good:gobject-cast-checks=disabled
+      - -Dgst-plugins-good:glib-asserts=disabled
+      - -Dgst-plugins-good:glib-checks=disabled
+      - -Dgst-plugins-good:gtk3=disabled
+      - -Dgst-plugins-bad:gobject-cast-checks=disabled
+      - -Dgst-plugins-bad:glib-asserts=disabled
+      - -Dgst-plugins-bad:glib-checks=disabled
+      - -Dgst-plugins-bad:extra-checks=disabled
+      - -Dgst-plugins-bad:vulkan=disabled
+      - -Dgst-plugins-bad:webrtc=disabled
+      - -Dgst-plugins-bad:wasapi=disabled
+      - -Dgst-plugins-bad:wasapi2=disabled
+      - -Dgst-plugins-bad:winks=disabled
+      - -Dgst-plugins-bad:winscreencap=disabled
+      - -Dgst-plugins-bad:assrender=enabled
+      - -Dgst-plugins-bad:nvcodec=enabled
+      - -Dgst-plugins-bad:v4l2codecs=enabled
+      - -Dgst-plugins-bad:va=enabled
+      - -Dgst-plugins-ugly:gobject-cast-checks=disabled
+      - -Dgst-plugins-ugly:glib-asserts=disabled
+      - -Dgst-plugins-ugly:glib-checks=disabled
+      - -Dgst-plugins-ugly:mpeg2dec=enabled
+    override-pull: |
+      craftctl default
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-libav-stop-caching-codecs.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-sidx-range-download.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-autodetect-subtitle-text-encoding.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-do-not-use-drm-modifiers-on-desktop.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-glupload-filter-formats.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-good-dashdemux2-improve-initial-representation-selection.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-good-dashdemux2-play-last-subfragment.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-good-matroska-fix-attachments-detection.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-good-matroska-support-seek-nearest-keyframe.patch
+    build-packages:
+      - bison
+      - flex
+      - libasound2-dev
+      - libgl1-mesa-dev
+      - liborc-0.4-dev
+      - libpulse-dev
+    stage-packages:
+      - liborc-0.4-0
+      - libpulse0
+    prime:
+      - -usr/share/man/*
+      - -usr/share/gtk-doc/html/*
+      - -usr/include/gst*
+  clapper:
+    # See 'snapcraft plugins'
+    plugin: meson
+    source: https://github.com/Rafostar/clapper.git
+    source-tag: $SNAPCRAFT_PROJECT_VERSION
+    meson-parameters:
+      - --prefix=/snap/clapper/current/usr
+      - -Dc_args="DHAVE_GST_PATCHES=1"
+    build-packages:
+      - libgudev-1.0-dev
+      - libsass-dev
+      - sassc
+      - libdv4-dev
+      - libdvdread-dev
+      - libdvdnav-dev
+      - libass-dev
+      - libuchardet-dev
+    stage-packages:
+      - libgudev-1.0-0
+      - libsass1
+      - sassc
+      - libdv4
+      - libdvdread8
+      - libdvdnav4
+      - libass9
+      - uchardet
+    override-prime: |
+      craftctl default
+      ln -s $CRAFT_PRIME/lib/$SNAPCRAFT_ARCH_TRIPLET/gstreamer-1.0/libgstpipewire.so $CRAFT_PRIME/usr/lib/gstreamer-1.0/
+    organize:
+      snap/clapper/current: .
+    parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
+      
+slots:
+  clapper-mpris:
+    interface: mpris
+    name: Clapper
+  clapper:
+    interface: dbus
+    bus: session
+    name: com.github.rafostar.Clapper
+  gnome-shell:
+    interface: dbus
+    bus: session
+    name: org.gnome.Shell
+  gtk-daemon:
+    interface: dbus
+    bus: session
+    name: org.gtk.vfs.Daemon
+apps:
+  clapper:
+    command: usr/bin/com.github.rafostar.Clapper %U
+    desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
+    environment:
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+    common-id: com.github.rafostar.Clapper
+    extensions: [ gnome ]
+    plugs:
+      - home
+      - audio-playback
+      - media-control
+    slots:
+      - clapper-mpris
+      - clapper
+      - gnome-shell
+      - gtk-daemon
