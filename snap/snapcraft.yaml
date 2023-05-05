@@ -48,6 +48,7 @@ parts:
       - -usr/include
       - -usr/lib/ffmpeg/examples
   libdvdcss:
+    after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
     source-tag: 1.4.2
     plugin: autotools
@@ -59,9 +60,13 @@ parts:
       - --prefix=/usr
       - --enable-shared
       - --disable-static
+    override-pull: |
+      craftctl default
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
     prime:
       - -usr/bin/*mpeg2*
   liba52:
+    after: [libmpeg2]
     source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
     plugin: autotools
     override-pull: |
@@ -161,6 +166,7 @@ parts:
       - -usr/share/gtk-doc/html/*
       - -usr/include/gst*
   clapper:
+    after: [ libmpeg2, ffmpeg, gstreamer, gtuber, libdvdcss, liba52,
     # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
