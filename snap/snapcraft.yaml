@@ -61,7 +61,7 @@ parts:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
     build-environment:
-      - LDFLAGS: $CRAFT_PART_STAGE/usr/include:$LDFLAGS
+     # - LDFLAGS: $CRAFT_PART_STAGE/usr/include:$LDFLAGS
     autotools-configure-parameters:
       - --prefix=/usr
       - --enable-shared
