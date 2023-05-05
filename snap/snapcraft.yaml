@@ -58,6 +58,7 @@ parts:
       - --enable-shared
       - --disable-static    
   libmpeg2:
+    after: [ffmpeg]
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
     build-environment:
