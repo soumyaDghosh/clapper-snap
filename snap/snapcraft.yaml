@@ -121,8 +121,8 @@ parts:
       - -Dgst-plugins-base:gobject-cast-checks=disabled
       - -Dgst-plugins-base:glib-asserts=disabled
       - -Dgst-plugins-base:glib-checks=disabled
-      - -Dgst-plugins-base:gl_api=openglgles2
-      - -Dgst-plugins-base:gl_platform=eglglx
+      - -Dgst-plugins-base:gl_api=opengl,gles2
+      - -Dgst-plugins-base:gl_platform=egl,glx
       - -Dgst-plugins-good:gobject-cast-checks=disabled
       - -Dgst-plugins-good:glib-asserts=disabled
       - -Dgst-plugins-good:glib-checks=disabled
