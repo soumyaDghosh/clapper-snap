@@ -70,7 +70,7 @@ parts:
       craftctl default
       patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
     build-packages:
-      - libxshmfence-dev
+      - libxext-dev
     prime:
       - -usr/bin/*mpeg2*
   liba52:
