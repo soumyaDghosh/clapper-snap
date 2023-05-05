@@ -67,6 +67,8 @@ parts:
     override-pull: |
       craftctl default
       patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
+    build-packages:
+      - libxshmfence-dev
     prime:
       - -usr/bin/*mpeg2*
   liba52:
@@ -86,6 +88,7 @@ parts:
     prime:
       - -usr/bin/*a52*
   gstreamer:
+    after: [libmpeg2]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: 1.22.2
     source-submodules: []
@@ -140,7 +143,7 @@ parts:
       - -Dgst-plugins-bad:assrender=enabled
       - -Dgst-plugins-bad:nvcodec=enabled
       - -Dgst-plugins-bad:v4l2codecs=enabled
-      - -Dgst-plugins-bad:va=enabled
+      - -Dgst-plugins-bad:va=disabled
       - -Dgst-plugins-ugly:gobject-cast-checks=disabled
       - -Dgst-plugins-ugly:glib-asserts=disabled
       - -Dgst-plugins-ugly:glib-checks=disabled
