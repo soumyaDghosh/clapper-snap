@@ -10,12 +10,6 @@ architectures:
   - build-on: arm64
   - build-on: armhf
 parts:
-  autotool-parameters:
-    plugin: nil
-    autotools-configure-parameters: &prm
-      - --prefix=/usr
-      - --enable-shared
-      - --disable-static
   gtuber:
     source: https://github.com/Rafostar/gtuber.git
     plugin: meson
@@ -27,6 +21,7 @@ parts:
   ffmpeg:
     source: https://git.ffmpeg.org/ffmpeg.git
     source-tag: n4.4
+    plugin: autotools
     autotools-configure-parameters:
       - --prefix=/usr
       - --disable-debug
@@ -58,11 +53,17 @@ parts:
     source: https://code.videolan.org/videolan/libdvdcss.git
     source-tag: 1.4.2
     plugin: autotools
-    autotools-configure-parameters: *prm
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --enable-shared
+      - --disable-static    
   libmpeg2:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
-    autotools-configure-parameters: *prm
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --enable-shared
+      - --disable-static
     override-pull: |
       craftctl default
       patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
@@ -78,7 +79,10 @@ parts:
       patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
-    autotools-configure-parameters: *prm
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --enable-shared
+      - --disable-static
     prime:
       - -usr/bin/*a52*
   gstreamer:
