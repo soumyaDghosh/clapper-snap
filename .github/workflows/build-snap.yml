@@ -12,7 +12,7 @@ jobs:
         architecture:
         - amd64
         #- armhf
-        #- arm64
+        - arm64
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
