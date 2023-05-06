@@ -62,7 +62,7 @@ parts:
       - -Dgst-gtuber=enabled      
   ffmpeg:
     source: https://git.ffmpeg.org/ffmpeg.git
-    source-tag: n6.0
+    source-tag: n5.0
     plugin: autotools
     autotools-configure-parameters:
       - --prefix=/usr
