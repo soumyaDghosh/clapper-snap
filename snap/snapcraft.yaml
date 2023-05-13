@@ -253,6 +253,12 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
+    override-build: |
+      set -eux
+      meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
+      ninja
+      DESTDIR=$CRAFT_PART_INSTALL
+      ninja install
     override-prime: |
       craftctl default
       ln -s $CRAFT_PRIME/lib/$SNAPCRAFT_ARCH_TRIPLET/gstreamer-1.0/libgstpipewire.so $CRAFT_PRIME/usr/lib/gstreamer-1.0/
