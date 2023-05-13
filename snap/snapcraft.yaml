@@ -233,7 +233,7 @@ parts:
       - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH} 
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
-      - -Dc_args='"-DHAVE_GST_PATCHES=1"'
+      - -Dc_args="-DHAVE_GST_PATCHES=1"
     build-packages:
       - ffmpeg
       - libgudev-1.0-dev
@@ -253,15 +253,15 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
-    override-build: |
-      set -eux
-      meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
-      ninja
-      DESTDIR=$CRAFT_PART_INSTALL
-      ninja install
-    override-prime: |
-      craftctl default
-      ln -s $CRAFT_PRIME/lib/$SNAPCRAFT_ARCH_TRIPLET/gstreamer-1.0/libgstpipewire.so $CRAFT_PRIME/usr/lib/gstreamer-1.0/
+    #override-build: |
+    #  set -eux
+    #  meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
+    #  ninja
+    #  DESTDIR=$CRAFT_PART_INSTALL
+    #  ninja install
+    #override-prime: |
+    #  craftctl default
+    #  ln -s $CRAFT_PRIME/lib/$SNAPCRAFT_ARCH_TRIPLET/gstreamer-1.0/libgstpipewire.so $CRAFT_PRIME/usr/lib/gstreamer-1.0/
     organize:
       snap/clapper/current: .
     parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
