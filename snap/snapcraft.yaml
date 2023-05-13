@@ -233,7 +233,7 @@ parts:
       - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH} 
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
-      - c_args=\"-DHAVE_GST_PATCHES=1\"
+      - Dc_args='"-DHAVE_GST_PATCHES=1"'
     build-packages:
       - ffmpeg
       - libgudev-1.0-dev
