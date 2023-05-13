@@ -60,36 +60,6 @@ parts:
       - -Dintrospection=disabled
       - -Dvapi=disabled
       - -Dgst-gtuber=enabled      
-  ffmpeg:
-    source: https://git.ffmpeg.org/ffmpeg.git
-    source-tag: n4.4.4
-    plugin: autotools
-    autotools-configure-parameters:
-      - --prefix=/usr
-      - --disable-debug
-      - --disable-doc
-      - --disable-static
-      - --disable-everything
-      - --enable-gpl
-      - --enable-version3
-      - --enable-shared
-      - --enable-optimizations
-      - --enable-runtime-cpudetect
-      - --enable-pthreads
-      - --enable-protocol=file
-      - --enable-decoder=dvvideo,flv,h263,h264,hevc,mjpeg,mpeg2video,mpeg4,mpegvideo,msmpeg4v1,msmpeg4v2,png,tiff,vc1,vp8,vp9,webp,wmv1,wmv2,wmv3,zerocodec
-      - --enable-decoder=aac,aac_fixed,aac_latm,ac3,ac3_fixed,ape,dca,dvaudio,eac3,flac,mp3,opus,tak,truehd,tta,wmalossless
-      - --enable-demuxer=ape,gif,yuv4mpegpipe
-    build-packages:
-      - nasm
-      - libgnutls28-dev
-      - libmp3lame-dev
-      - libvorbis-dev
-    stage-packages:
-      - libmp3lame0
-    stage:
-      - -usr/include
-      - -usr/lib/ffmpeg/examples
   libdvdcss:
     after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
@@ -188,7 +158,7 @@ parts:
       - -Dgst-plugins-bad:assrender=enabled
       - -Dgst-plugins-bad:nvcodec=enabled
       - -Dgst-plugins-bad:v4l2codecs=enabled
-      - -Dgst-plugins-bad:va=disabled
+      - -Dgst-plugins-bad:va=enabled
       - -Dgst-plugins-ugly:gobject-cast-checks=disabled
       - -Dgst-plugins-ugly:glib-asserts=disabled
       - -Dgst-plugins-ugly:glib-checks=disabled
@@ -209,6 +179,7 @@ parts:
     build-packages:
       - bison
       - flex
+      - ffmpeg
       - libasound2-dev
       - libgl1-mesa-dev
       - liborc-0.4-dev
