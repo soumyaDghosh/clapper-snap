@@ -224,7 +224,7 @@ parts:
       - -usr/share/gtk-doc/html/*
       - -usr/include/gst*
   clapper:
-    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52 ]
+    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, gtk4 ]
     # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
