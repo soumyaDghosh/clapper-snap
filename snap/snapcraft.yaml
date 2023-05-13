@@ -70,7 +70,6 @@ parts:
       - --enable-shared
       - --disable-static    
   libmpeg2:
-    after: [ffmpeg]
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
     build-environment:
@@ -83,6 +82,7 @@ parts:
       craftctl default
       patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
     build-packages:
+      - ffmpeg
       - libxext-dev
     prime:
       - -usr/bin/*mpeg2*
@@ -193,7 +193,7 @@ parts:
       - -usr/share/gtk-doc/html/*
       - -usr/include/gst*
   clapper:
-    after: [ libmpeg2, ffmpeg, gstreamer, gtuber, libdvdcss, liba52 ]
+    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52 ]
     # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
@@ -202,6 +202,7 @@ parts:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="DHAVE_GST_PATCHES=1"
     build-packages:
+      - ffmpeg
       - libgudev-1.0-dev
       - libsass-dev
       - sassc
