@@ -53,6 +53,7 @@ parts:
     organize:
       usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0    
   gtuber:
+    after: [gstreamer]
     source: https://github.com/Rafostar/gtuber.git
     plugin: meson
     build-environment:
