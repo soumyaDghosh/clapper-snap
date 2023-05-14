@@ -285,7 +285,7 @@ slots:
     name: org.gtk.vfs.Daemon
 apps:
   clapper:
-    command: usr/bin/com.github.rafostar.Clapper %U
+    command: usr/bin/com.github.rafostar.Clapper
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
       GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
