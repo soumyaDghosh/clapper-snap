@@ -9,6 +9,9 @@ architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
+layout:
+  /usr/bin/gjs:
+    symlink: $SNAP/gnome-platform/usr/bin/gjs
 parts:
   gtk4:
     after: [gstreamer]
@@ -220,6 +223,60 @@ parts:
     stage-packages:
       - liborc-0.4-0
       - libpulse0
+      - libva-drm2
+      - ocl-icd-libopencl1
+      - libaom3
+      - libavcodec58
+      - libavfilter7
+      - libavformat58
+      - libavutil56
+      - libblas3
+      - libbluray2
+      - libbs2b0
+      - libchromaprint1
+      - libcodec2-1.0
+      - libdav1d5
+      - libflite1
+      - libgfortran-10-dev-arm64-cross
+      - libgfortran-10-dev-amd64-cross
+      - libgfortran-10-dev-armhf-cross
+      - libgme0
+      - libgsm1
+      - liblapack3
+      - libva-wayland2
+      - libx264-163
+      - libx265-199
+      - libsord-0-0
+      - libvidstab1.1
+      - libzimg2
+      - libzmq5
+      - libzvbi0
+      - libva-x11-2
+      - libvdpau1
+      - libudfread0
+      - libswscale5
+      - libswresample3
+      - libssh-gcrypt-4
+      - libsrt1.4-gnutls
+      - libsratom-0-0
+      - libsphinxbase3
+      - libsoxr0
+      - libsord-0-0
+      - libsodium23
+      - libsnappy1v5
+      - libshine3
+      - libserd-0-0
+      - librubberband2
+      - librabbitmq4
+      - libpostproc55
+      - libpocketsphinx3
+      - libpgm-5.3-0
+      - libopenmpt0
+      - libnuma1
+      - libnorm1
+      - libmysofa1
+      - libmfx1
+      - liblilv-0-0
     prime:
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
@@ -254,15 +311,18 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
+      - libharfbuzz-gobject0
+      - libharfbuzz-icu0
+      - libharfbuzz0b
     #override-build: |
     #  set -eux
     #  meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
     #  ninja
     #  DESTDIR=$CRAFT_PART_INSTALL
     #  ninja install
-    #override-prime: |
-    #  craftctl default
-    #  ln -s $CRAFT_PRIME/lib/$SNAPCRAFT_ARCH_TRIPLET/gstreamer-1.0/libgstpipewire.so $CRAFT_PRIME/usr/lib/gstreamer-1.0/
+    override-pull: |
+      craftctl default
+      sed -i -e 's|@GJS@|/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
     parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
@@ -275,14 +335,6 @@ slots:
     interface: dbus
     bus: session
     name: com.github.rafostar.Clapper
-  gnome-shell:
-    interface: dbus
-    bus: session
-    name: org.gnome.Shell
-  gtk-daemon:
-    interface: dbus
-    bus: session
-    name: org.gtk.vfs.Daemon
 apps:
   clapper:
     command: usr/bin/com.github.rafostar.Clapper
@@ -298,5 +350,3 @@ apps:
     slots:
       - clapper-mpris
       - clapper
-      - gnome-shell
-      - gtk-daemon
