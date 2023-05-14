@@ -13,49 +13,48 @@ layout:
   /usr/bin/gjs:
     symlink: $SNAP/gnome-platform/usr/bin/gjs
 parts:
-  gtk4:
-    after: [gstreamer]
-    plugin: meson
-    source: https://gitlab.gnome.org/GNOME/gtk.git
-    source-tag: 4.6.4
-    meson-parameters:
-      - --prefix=/usr
-      - --buildtype=release
-      - --wrap-mode=nodownload
-      - -Dwin32-backend=false
-      - -Dmacos-backend=false
-      - -Dmedia-ffmpeg=disabled
-      - -Dprint-cups=disabled
-      - -Dintrospection=enabled
-      - -Ddemos=false
-      - -Dbuild-examples=false
-      - -Dbuild-tests=false
-    build-packages:
-      - libxkbcommon-dev
-      - libcups2-dev
-      - libcolord-dev
-      - libxrandr-dev
-      - libxcursor-dev
-      - libisocodes-dev
-      - libxcomposite-dev
-      - libxdamage-dev
-      - libxfixes-dev
-      - libxi-dev
-      - libxkbfile-dev
-      - libxml2-utils
-    override-pull: |
-      craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gtk4-respect-es-api.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gtk4-disable-meson-gnome-post-install.patch
-    stage:
-      - -usr/bin/wayland-scanner
-      - -usr/lib/*/libwayland-client.so.0.20.0
-      - -usr/lib/*/libwayland-server.so.0.20.0
-    prime:
-      - -usr/bin/gtk4-builder-tool
-      - -usr/bin/gtk4-encode-symbolic-svg
-    organize:
-      usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0    
+  #gtk4:
+  #  after: [gstreamer]
+  #  plugin: meson
+  #  source: https://gitlab.gnome.org/GNOME/gtk.git
+  #  source-tag: 4.6.4
+  #  meson-parameters:
+  #    - --prefix=/usr
+  #    - --buildtype=release
+  #    - --wrap-mode=nodownload
+  #    - -Dwin32-backend=false
+  #    - -Dmacos-backend=false
+  #    - -Dmedia-ffmpeg=disabled
+  #    - -Dprint-cups=disabled
+  #    - -Dintrospection=enabled
+  #    - -Ddemos=false
+  #    - -Dbuild-examples=false
+  #    - -Dbuild-tests=false
+  #  build-packages:
+  #    - libxkbcommon-dev
+  #    - libcups2-dev
+  #    - libcolord-dev
+  #    - libxrandr-dev
+  #    - libxcursor-dev
+  #    - libisocodes-dev
+  #    - libxcomposite-dev
+  #    - libxfixes-dev
+  #    - libxi-dev
+  #    - libxkbfile-dev
+  #    - libxml2-utils
+  #  override-pull: |
+  #    craftctl default
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/gtk4-respect-es-api.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/gtk4-disable-meson-gnome-post-install.patch
+  #  stage:
+  #    - -usr/bin/wayland-scanner
+  #    - -usr/lib/*/libwayland-client.so.0.20.0
+  #    - -usr/lib/*/libwayland-server.so.0.20.0
+  #  prime:
+  #    - -usr/bin/gtk4-builder-tool
+  #    - -usr/bin/gtk4-encode-symbolic-svg
+  #  organize:
+  #    usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0    
   gtuber:
     after: [gstreamer]
     source: https://github.com/Rafostar/gtuber.git
@@ -228,7 +227,7 @@ parts:
       - -usr/share/gtk-doc/html/*
       - -usr/include/gst*
   clapper:
-    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, gtk4 ]
+    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52 ]
     # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
