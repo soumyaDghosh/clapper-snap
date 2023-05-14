@@ -12,8 +12,8 @@ architectures:
 layout:
   /usr/bin/gjs:
     symlink: $SNAP/gnome-platform/usr/bin/gjs
- environment:
-      GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
+environment:
+  GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
 parts:
   gtk4:
     after: [gstreamer]
