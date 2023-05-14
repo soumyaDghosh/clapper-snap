@@ -311,9 +311,9 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
-      - libharfbuzz-gobject0
-      - libharfbuzz-icu0
-      - libharfbuzz0b
+      #- libharfbuzz-gobject0
+      #- libharfbuzz-icu0
+      #- libharfbuzz0b
     #override-build: |
     #  set -eux
     #  meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
