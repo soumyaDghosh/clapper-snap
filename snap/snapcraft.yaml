@@ -302,6 +302,7 @@ parts:
       - libdvdnav-dev
       - libass-dev
       - libuchardet-dev
+      - libharfbuzz-dev
     stage-packages:
       - libgudev-1.0-0
       - libsass1
