@@ -248,7 +248,7 @@ parts:
       - libdvdnav-dev
       - libass-dev
       - libuchardet-dev
-      - libharfbuzz-dev
+      - libpango-1.0-dev
     stage-packages:
       - libgudev-1.0-0
       - libsass1
@@ -258,6 +258,7 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
+      - libpango-1.0-0
       #- libharfbuzz-gobject0
       #- libharfbuzz-icu0
       #- libharfbuzz0b
