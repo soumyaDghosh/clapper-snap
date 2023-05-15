@@ -11,7 +11,7 @@ architectures:
   - build-on: armhf
 layout:
   /usr/bin/gjs:
-    symlink: $SNAP/usr/bin/gjs
+    symlink: $SNAP/gnome-platform/usr/bin/gjs
 parts:
   #gtk4:
   #  after: [gstreamer]
@@ -257,9 +257,7 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
-      - libpango1.0-0
-      - libgjs0g
-      - gjs
+      - libgtk-4-1
       #- libharfbuzz-gobject0
       #- libharfbuzz-icu0
       #- libharfbuzz0b
@@ -290,7 +288,7 @@ apps:
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
       GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
-      GI_TYPELIB_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
+      GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
     common-id: com.github.rafostar.Clapper
     extensions: [ gnome ]
     plugs:
