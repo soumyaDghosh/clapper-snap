@@ -234,7 +234,6 @@ parts:
       - libgfortran5
       - libgme0
       - libgsm1
-      - libicd-libopencl1
       - liblapack3
       - liblilv-0-0
       - libmfx1
@@ -273,6 +272,7 @@ parts:
       - libzimg2
       - libzmq5
       - libzvbi0
+      - ocl-icd-libopencl1
 
     prime:
       - -usr/share/man/*
