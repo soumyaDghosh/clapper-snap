@@ -256,7 +256,7 @@ parts:
       - libsoxr0
       - libsphinxbase3
       - libsratom-0-0
-      - libsrt1.4
+      - libsrt1.4-gnutls
       - libssh-gcrypt-4
       - libswresample3
       - libswscale5
