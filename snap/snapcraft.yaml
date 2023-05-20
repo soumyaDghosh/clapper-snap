@@ -234,7 +234,6 @@ parts:
       - libfortran5
       - libgme0
       - libgsm1
-      - libgstva-1.0-0.2002.0
       - libicd-libopencl1
       - liblapack3
       - liblilv-0-0
