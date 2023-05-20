@@ -91,6 +91,7 @@ parts:
       - ffmpeg
       - libxext-dev
     prime:
+      - -usr/lib/pkgconfig
       - -usr/bin/*mpeg2*
   liba52:
     after: [libmpeg2]
@@ -257,10 +258,6 @@ parts:
       - libdvdnav4
       - libass9
       - uchardet
-      - libgtk-4-1
-      #- libharfbuzz-gobject0
-      #- libharfbuzz-icu0
-      #- libharfbuzz0b
     #override-build: |
     #  set -eux
     #  meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
@@ -273,7 +270,11 @@ parts:
     organize:
       snap/clapper/current: .
     parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
-      
+  cleanup:
+    plugin: nil
+    override-prime: |
+      craftctl default
+      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc
 slots:
   clapper-mpris:
     interface: mpris
