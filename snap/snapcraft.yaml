@@ -12,6 +12,8 @@ architectures:
 layout:
   /usr/bin/gjs:
     symlink: $SNAP/gnome-platform/usr/bin/gjs
+  /usr/lib/x86_64-linux-gnu/blas/libblas.so.3:
+    symlink: $SNAP/usr/lib/x86_64-linux-gnu/blas/libblas.so.3
 parts:
   #gtk4:
   #  after: [gstreamer]
@@ -227,6 +229,7 @@ parts:
       - libblas3
       - libbluray2
       - libbs2b0
+      - libcairo-script-interpreter2
       - libchromaprint1
       - libcodec2-1.0
       - libdav1d5
