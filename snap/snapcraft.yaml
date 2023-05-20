@@ -231,7 +231,7 @@ parts:
       - libcodec2-1.0
       - libdav1d5
       - libflite1
-      - libfortran5
+      - libgfortran5
       - libgme0
       - libgsm1
       - libicd-libopencl1
