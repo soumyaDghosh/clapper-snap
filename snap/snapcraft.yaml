@@ -93,22 +93,21 @@ parts:
     prime:
       - -usr/lib/pkgconfig
       - -usr/bin/*mpeg2*
-  liba52:
-    after: [libmpeg2]
-    source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
-    plugin: autotools
-    override-pull: |
-      craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
-    autotools-configure-parameters:
-      - --prefix=/usr
-      - --enable-shared
-      - --disable-static
-    prime:
-      - -usr/bin/*a52*
+  #liba52:
+  #  after: [libmpeg2]
+  #  source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
+  #  plugin: autotools
+  #  override-pull: |
+  #    craftctl default
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
+  #  autotools-configure-parameters:
+  #    - --prefix=/usr
+  #    - --enable-shared
+  #    - --disable-static
+
   gstreamer:
     after: [libmpeg2]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
@@ -223,6 +222,10 @@ parts:
     stage-packages:
       - liborc-0.4-0
       - libpulse0
+      - libavfilter7
+      - libva-drm2
+      - libx264-163
+      - libxv1
     prime:
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
@@ -248,8 +251,8 @@ parts:
       - libdvdnav-dev
       - libass-dev
       - libuchardet-dev
-      - libpango1.0-dev
     stage-packages:
+      - liba52-0.7.4
       - libgudev-1.0-0
       - libsass1
       - sassc
@@ -274,7 +277,7 @@ parts:
     plugin: nil
     override-prime: |
       craftctl default
-      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc
+      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug
 slots:
   clapper-mpris:
     interface: mpris
@@ -295,7 +298,8 @@ apps:
     plugs:
       - home
       - audio-playback
-      - media-control
+      - mount-observe
+      - screen-inhibit-control
     slots:
       - clapper-mpris
       - clapper
