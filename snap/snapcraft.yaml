@@ -15,6 +15,36 @@ layout:
   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3:
     symlink: $SNAP/usr/lib/x86_64-linux-gnu/blas/libblas.so.3
 parts:
+  ffmpeg:
+    # WORKAROUND:
+    # Build from source because the ffmpeg package installs libraries as dependencies
+    # that conflict with the Gnome extension
+    plugin: autotools
+    source: https://ffmpeg.org/releases/ffmpeg-6.0.tar.xz
+    source-checksum: sha256/57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082
+    autotools-configure-parameters:
+      # WORKAROUND: Install to /usr instead of /usr/local because it's not in search paths
+      - --prefix=/usr
+      - --disable-debug
+      - --disable-doc
+      - --disable-static
+      - --enable-gpl
+      - --enable-shared
+      - --disable-ffplay
+      - --disable-devices
+      - --enable-gnutls
+      - --enable-libmp3lame
+      - --enable-libvorbis
+    build-packages:
+      - nasm
+      - libgnutls28-dev
+      - libmp3lame-dev
+      - libvorbis-dev
+    stage-packages:
+      - libmp3lame0
+    stage:
+      - -usr/include
+      - -usr/share
   #gtk4:
   #  after: [gstreamer]
   #  plugin: meson
@@ -282,7 +312,7 @@ parts:
       - -usr/share/gtk-doc/html/*
       - -usr/include/gst*
   clapper:
-    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52 ]
+    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, ffmpeg ]
     # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
@@ -293,7 +323,6 @@ parts:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="-DHAVE_GST_PATCHES=1"
     build-packages:
-      - ffmpeg
       - libgudev-1.0-dev
       - libsass-dev
       - sassc
@@ -353,6 +382,8 @@ apps:
       - audio-playback
       - mount-observe
       - screen-inhibit-control
+      - network
+      - network-status
     slots:
       - clapper-mpris
       - clapper
