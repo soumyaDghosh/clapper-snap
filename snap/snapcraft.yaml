@@ -214,6 +214,9 @@ parts:
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-mpdparser-fix-missing-uri-query.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
+    override-prime: |
+      craftctl default
+      chmod 755 usr/libexec/gstreamer-1.0/gst-ptp-helper #trying to fix the permission error
     build-packages:
       - bison
       - ffmpeg
