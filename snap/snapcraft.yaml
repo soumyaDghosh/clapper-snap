@@ -8,12 +8,25 @@ architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-layout:
-  /usr/bin/gjs:
-    symlink: $SNAP/gnome-platform/usr/bin/gjs
-  /usr/lib/x86_64-linux-gnu/blas/libblas.so.3:
-    symlink: $SNAP/usr/lib/x86_64-linux-gnu/blas/libblas.so.3
+
 parts:
+  x264:
+    plugin: autotools
+    source: https://salsa.debian.org/multimedia-team/x264.git
+    source-branch: 'upstream/0.164.3095+gitbaee400'
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
+      - --disable-cli
+      - --enable-shared
+      - --enable-strip
+    build-packages:
+      - libva-dev
+      - nasm
+    prime:
+      - -usr/lib/*/pkgconfig
+      - -usr/include
+      - -usr/share
   ffmpeg:
     # WORKAROUND:
     # Build from source because the ffmpeg package installs libraries as dependencies
@@ -40,9 +53,11 @@ parts:
       - --enable-demuxer=ape,gif,yuv4mpegpipe
     build-packages:
       - nasm
-    stage:
+    prime:
       - -usr/include
       - -usr/share
+      - -usr/lib/pkgconfig
+      - -usr/lib/*/pkgconfig
   #gtk4:
   #  after: [gstreamer]
   #  plugin: meson
@@ -96,6 +111,11 @@ parts:
       - -Dintrospection=disabled
       - -Dvapi=disabled
       - -Dgst-gtuber=enabled
+    prime:
+      - -usr/include
+      - -usr/lib/pkgconfig
+      - -usr/lib/*/pkgconfig
+      - -usr/share
   libdvdcss:
     after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
@@ -105,6 +125,11 @@ parts:
       - --prefix=/usr
       - --enable-shared
       - --disable-static
+    prime:
+      - -usr/include
+      - -usr/lib/pkgconfig
+      - -usr/lib/*/pkgconfig
+      - -usr/share
   libmpeg2:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
@@ -121,8 +146,11 @@ parts:
       - ffmpeg
       - libxext-dev
     prime:
-      - -usr/lib/pkgconfig
       - -usr/bin/*mpeg2*
+      - -usr/include
+      - -usr/lib/pkgconfig
+      - -usr/lib/*/pkgconfig
+      - -usr/share
   #liba52:
   #  after: [libmpeg2]
   #  source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
@@ -139,11 +167,14 @@ parts:
   #    - --disable-static
 
   gstreamer:
-    after: [libmpeg2]
+    after: [libmpeg2, ffmpeg, x264]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: 1.20.2
     source-submodules: []
     plugin: meson
+    build-environment:
+      - LDFLAGS: -L/snap/gnome-42-2204-sdk/current/usr/lib -L/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET -L$CRAFT_STAGE/usr/lib -L$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET -L/usr/lib -L/usr/lib/$CRAFT_ARCH_TRIPLET
+      - GI_TYPELIB_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/girepository-1.0:/snap/gnome-42-2204-sdk/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$GI_TYPELIB_PATH
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
@@ -218,17 +249,11 @@ parts:
       chmod 755 usr/libexec/gstreamer-1.0/gst-ptp-helper #trying to fix the permission error
     build-packages:
       - bison
-      - ffmpeg
       - flex
       - gettext
       - liba52-0.7.4-dev
       - libass-dev
-      - libavcodec-dev
-      - libavdevice-dev
-      - libavfilter-dev
-      - libavformat-dev
       - libffi-dev
-      - libgirepository1.0-dev
       - libgles-dev
       - libgnutls28-dev
       - libgudev-1.0-dev
@@ -245,18 +270,12 @@ parts:
       - libva-dev
       - libvpx-dev
       - libwavpack-dev
-      - libwayland-dev
-      - libx264-dev
       - libxrandr-dev
       - libxv-dev
-      - python3-pip
       - yasm
       - zlib1g-dev
     stage-packages:
       - libaom3
-      - libavcodec58
-      - libavfilter7
-      - libavformat58
       - libblas3
       - libbluray2
       - libbs2b0
@@ -311,7 +330,7 @@ parts:
     prime:
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
-      - -usr/include/gst*
+      - -usr/include
   clapper:
     after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, ffmpeg ]
     # See 'snapcraft plugins'
@@ -350,7 +369,7 @@ parts:
     #  ninja install
     override-pull: |
       craftctl default
-      sed -i -e 's|@GJS@|/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
+      sed -i -e 's|@GJS@|/snap/clapper/current/gnome-platform/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
     parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
@@ -359,8 +378,6 @@ parts:
     override-prime: |
       craftctl default
       rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1
-      cd $CRAFT_PRIME/usr/lib
-      rm -rf */liborc-test-0.4.so.0.32.0 */libgstwebrtc-1.0.so.0.2002.0 */libgstplayer-1.0.so.0.2002.0 */libgstinsertbin-1.0.so.0.2002.0 */libgstcheck-1.0.so.0.2002.0 */libgstbadaudio-1.0.so.0.2002.0 libmpeg2convert.so.0.0.0
 slots:
   clapper-mpris:
     interface: mpris
