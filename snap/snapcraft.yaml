@@ -19,28 +19,27 @@ parts:
     # Build from source because the ffmpeg package installs libraries as dependencies
     # that conflict with the Gnome extension
     plugin: autotools
-    source: https://ffmpeg.org/releases/ffmpeg-6.0.tar.xz
-    source-checksum: sha256/57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082
+    source: https://git.ffmpeg.org/ffmpeg.git
+    source-branch: 'n4.4'
     autotools-configure-parameters:
       # WORKAROUND: Install to /usr instead of /usr/local because it's not in search paths
       - --prefix=/usr
       - --disable-debug
       - --disable-doc
       - --disable-static
+      - --disable-everything
       - --enable-gpl
       - --enable-shared
-      - --disable-ffplay
-      - --disable-devices
-      - --enable-gnutls
-      - --enable-libmp3lame
-      - --enable-libvorbis
+      - --enable-version3
+      - --enable-optimizations
+      - --enable-runtime-cpudetect
+      - --enable-pthreads
+      - --enable-protocol=file
+      - --enable-decoder=dvvideo,flv,h263,h264,hevc,mjpeg,mpeg2video,mpeg4,mpegvideo,msmpeg4v1,msmpeg4v2,png,tiff,vc1,vp8,vp9,webp,wmv1,wmv2,wmv3,zerocodec
+      - --enable-decoder=aac,aac_fixed,aac_latm,ac3,ac3_fixed,ape,dca,dvaudio,eac3,flac,mp3,opus,tak,truehd,tta,wmalossless
+      - --enable-demuxer=ape,gif,yuv4mpegpipe
     build-packages:
       - nasm
-      - libgnutls28-dev
-      - libmp3lame-dev
-      - libvorbis-dev
-    stage-packages:
-      - libmp3lame0
     stage:
       - -usr/include
       - -usr/share
@@ -85,7 +84,7 @@ parts:
   #    - -usr/bin/gtk4-builder-tool
   #    - -usr/bin/gtk4-encode-symbolic-svg
   #  organize:
-  #    usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0    
+  #    usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0
   gtuber:
     after: [gstreamer]
     source: https://github.com/Rafostar/gtuber.git
@@ -96,7 +95,7 @@ parts:
       - --prefix=/usr
       - -Dintrospection=disabled
       - -Dvapi=disabled
-      - -Dgst-gtuber=enabled      
+      - -Dgst-gtuber=enabled
   libdvdcss:
     after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
@@ -105,7 +104,7 @@ parts:
     autotools-configure-parameters:
       - --prefix=/usr
       - --enable-shared
-      - --disable-static    
+      - --disable-static
   libmpeg2:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
@@ -320,7 +319,7 @@ parts:
     source: https://github.com/Rafostar/clapper.git
     source-tag: $SNAPCRAFT_PROJECT_VERSION
     build-environment:
-      - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH} 
+      - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="-DHAVE_GST_PATCHES=1"
@@ -359,7 +358,7 @@ parts:
     plugin: nil
     override-prime: |
       craftctl default
-      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1  
+      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1
       cd $CRAFT_PRIME/usr/lib
       rm -rf */liborc-test-0.4.so.0.32.0 */libgstwebrtc-1.0.so.0.2002.0 */libgstplayer-1.0.so.0.2002.0 */libgstinsertbin-1.0.so.0.2002.0 */libgstcheck-1.0.so.0.2002.0 */libgstbadaudio-1.0.so.0.2002.0 libmpeg2convert.so.0.0.0
 slots:
