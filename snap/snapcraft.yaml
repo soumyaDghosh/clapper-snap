@@ -174,7 +174,7 @@ parts:
     plugin: meson
     build-environment:
       - LDFLAGS: -L/snap/gnome-42-2204-sdk/current/usr/lib -L/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET -L$CRAFT_STAGE/usr/lib -L$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET -L/usr/lib -L/usr/lib/$CRAFT_ARCH_TRIPLET
-      - GI_TYPELIB_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/girepository-1.0:/snap/gnome-42-2204-sdk/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$GI_TYPELIB_PATH
+      - GI_TYPELIB_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/girepository-1.0:/snap/gnome-42-2204-sdk/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
