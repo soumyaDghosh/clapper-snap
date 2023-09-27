@@ -111,6 +111,8 @@ parts:
       - -Dintrospection=disabled
       - -Dvapi=disabled
       - -Dgst-gtuber=enabled
+    organize: 
+      usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0: usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0/gtuber-0.0
     prime:
       - -usr/include
       - -usr/lib/pkgconfig
