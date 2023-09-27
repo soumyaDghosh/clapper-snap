@@ -111,8 +111,6 @@ parts:
       - -Dintrospection=disabled
       - -Dvapi=disabled
       - -Dgst-gtuber=enabled
-    organize: 
-      usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0: usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0/gtuber-0.0
     prime:
       - -usr/include
       - -usr/lib/pkgconfig
@@ -393,8 +391,7 @@ apps:
     command: usr/bin/com.github.rafostar.Clapper
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
-      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0
-      GST_PLUGIN_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0
+      GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0
       GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
       LD_LIBRARY_PATH: $SNAP/usr/lib:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$LD_LIBRARY_PATH
     common-id: com.github.rafostar.Clapper
