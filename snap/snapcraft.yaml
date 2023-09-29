@@ -1,7 +1,7 @@
-name: clapper # you probably want to 'snapcraft register <name>'
-base: core22 # the base snap is the execution environment for this snap
-grade: stable # must be 'stable' to release into candidate/stable channels
-confinement: strict # use 'strict' once you have the right plugs and slots
+name: clapper 
+base: core22 
+grade: stable 
+confinement: strict
 icon: com.github.rafostar.Clapper.svg
 adopt-info: clapper
 architectures:
@@ -325,7 +325,7 @@ parts:
       - libxvidcore4
       - ocl-icd-libopencl1
 
-    prime:
+    stage:
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libavcodec*
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libavutil*
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libbluray*
