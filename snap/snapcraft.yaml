@@ -37,6 +37,7 @@ parts:
     autotools-configure-parameters:
       # WORKAROUND: Install to /usr instead of /usr/local because it's not in search paths
       - --prefix=/usr
+      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
       - --disable-debug
       - --disable-doc
       - --disable-static
@@ -377,7 +378,7 @@ parts:
     plugin: nil
     override-prime: |
       craftctl default
-      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1
+      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1 $CRAFT_PRIME/usr/lib/*/gdk-pixbuf-2.0
 slots:
   clapper-mpris:
     interface: mpris
