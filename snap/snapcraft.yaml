@@ -354,6 +354,7 @@ parts:
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libzmq*
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libzvbi-chains*
       - -usr/lib/*/gdk-pixbuf-2.0
+    prime:
       - -usr/lib/pkgconfig
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
