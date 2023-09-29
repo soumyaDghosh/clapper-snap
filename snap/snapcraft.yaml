@@ -323,12 +323,38 @@ parts:
       - libx265-199
       - libxv1
       - libxvidcore4
-      - libzimg2
-      - libzmq5
-      - libzvbi0
       - ocl-icd-libopencl1
 
     prime:
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libavcodec*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libavutil*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libbluray*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libbs2b*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libchromaprint*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libflite*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libgme*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libicu*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/liblilv*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libmfx*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libmysofa*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libopenmpt*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/liborc-test-0.4*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libpocketsphinx*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libpostproc*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/librabbitmq*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/librubberband*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libsphinxad*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libsrt-gnutls*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libssh-gcrypt*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libswresample*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libswscale*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libtheora*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libvidstab*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libzimg*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libzmq*
+      - -usr/lib/$CRAFT_ARCH_TRIPLET/libzvbi-chains*
+      - -usr/lib/*/gdk-pixbuf-2.0
+      - -usr/lib/pkgconfig
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
       - -usr/include
@@ -361,7 +387,6 @@ parts:
       - libdvdread8
       - libdvdnav4
       - libass9
-      - uchardet
     #override-build: |
     #  set -eux
     #  meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
@@ -378,7 +403,7 @@ parts:
     plugin: nil
     override-prime: |
       craftctl default
-      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1 $CRAFT_PRIME/usr/lib/*/gdk-pixbuf-2.0
+      rm -rf $CRAFT_PRIME/usr/lib/pkgconfig $CRAFT_PRIME/usr/lib/*/pkgconfig $CRAFT_PRIME/usr/lib/*/libharfbuzz* $CRAFT_PRIME/usr/include $CRAFT_PRIME/usr/man $CRAFT_PRIME/usr/share/man $CRAFT_PRIME/usr/share/pkgconfig $CRAFT_PRIME/usr/share/doc $CRAFT_PRIME/usr/share/bug $CRAFT_PRIME/usr/lib/*/libpulse-simple.so.0.1.1 
 slots:
   clapper-mpris:
     interface: mpris
