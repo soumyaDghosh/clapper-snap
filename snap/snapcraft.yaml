@@ -394,22 +394,22 @@ parts:
       - libass9
       - libuchardet0
     prime:
-      - usr/lib/$CRAFT_ARCH_TRIPLETliba52-0.7.4.so
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibgudev-1.0.so.0
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibgudev-1.0.so.0.3.0
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibsass.so.1
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibsass.so.1.0.0
+      - usr/lib/$CRAFT_ARCH_TRIPLET/liba52-0.7.4.so
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0.3.0
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1.0.0
       - usr/bin/sassc
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibdv.so.4
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibdv.so.4.0.3
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibdvdread.so.8
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibdvdread.so.8.0.0
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibdvdnav.so.4
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibdvdnav.so.4.3.0
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibass.so.9
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibass.so.9.1.3
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibuchardet.so.0
-      - usr/lib/$CRAFT_ARCH_TRIPLETlibuchardet.so.0.0.7
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libdv.so.4
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libdv.so.4.0.3
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdread.so.8
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdread.so.8.0.0
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdnav.so.4
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdnav.so.4.3.0
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libass.so.9
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libass.so.9.1.3
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0.0.7
 
 slots:
   clapper-mpris:
