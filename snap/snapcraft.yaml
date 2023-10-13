@@ -429,6 +429,7 @@ apps:
       GST_PLUGIN_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$GST_PLUGIN_PATH
       GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
       LD_LIBRARY_PATH: $SNAP/usr/lib:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$LD_LIBRARY_PATH
+      GDK_DEBUG: portals
     common-id: com.github.rafostar.Clapper
     extensions: [ gnome ]
     plugs:
