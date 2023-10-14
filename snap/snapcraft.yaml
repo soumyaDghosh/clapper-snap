@@ -288,7 +288,7 @@ parts:
       - libgsm1
       - liblapack3
       - liblilv-0-0
-      - libmfx1
+      #- libmfx1
       - libmysofa1
       - libnorm1
       - libnuma1
@@ -316,6 +316,8 @@ parts:
       - libxv1
       - libxvidcore4
       - ocl-icd-libopencl1
+      try:
+        - libmfx1
 
     stage:
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libavcodec*
