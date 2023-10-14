@@ -316,7 +316,7 @@ parts:
       - libxv1
       - libxvidcore4
       - ocl-icd-libopencl1
-      try:
+      - on amd64:
         - libmfx1
 
     stage:
