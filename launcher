@@ -1,0 +1,7 @@
+#!/bin/bash
+
+unset GST_PLUGIN_PATH
+unset GST_PLUGIN_SYSTEM_PATH
+export GST_PLUGIN_SYSTEM_PATH="$SNAP/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET/gstreamer-1.0"
+export GST_PLUGIN_PATH="$SNAP/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET/gtuber-0.0"
+exec "$@"
