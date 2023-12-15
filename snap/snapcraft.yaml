@@ -10,10 +10,20 @@ architectures:
   - build-on: armhf
 
 parts:
+  launcher:
+    plugin: dump
+    source: .
+    override-pull: |
+      craftctl default
+      echo '2'
+    override-build: |
+      cp launcher $CRAFT_PART_INSTALL/
+
   x264:
     plugin: autotools
     source: https://salsa.debian.org/multimedia-team/x264.git
     source-branch: 'upstream/0.164.3095+gitbaee400'
+    source-depth: 1
     autotools-configure-parameters:
       - --prefix=/usr
       - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
@@ -27,6 +37,7 @@ parts:
       - -usr/lib/*/pkgconfig
       - -usr/include
       - -usr/share
+
   ffmpeg:
     # WORKAROUND:
     # Build from source because the ffmpeg package installs libraries as dependencies
@@ -34,6 +45,7 @@ parts:
     plugin: autotools
     source: https://git.ffmpeg.org/ffmpeg.git
     source-branch: 'n4.4'
+    source-depth: 1
     autotools-configure-parameters:
       # WORKAROUND: Install to /usr instead of /usr/local because it's not in search paths
       - --prefix=/usr
@@ -60,6 +72,7 @@ parts:
       - -usr/share
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
+
   #gtk4:
   #  after: [gstreamer]
   #  plugin: meson
@@ -102,9 +115,11 @@ parts:
   #    - -usr/bin/gtk4-encode-symbolic-svg
   #  organize:
   #    usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0
+
   gtuber:
     after: [gstreamer]
     source: https://github.com/Rafostar/gtuber.git
+    source-depth: 1
     plugin: meson
     build-environment:
       - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
@@ -113,17 +128,17 @@ parts:
       - -Dintrospection=disabled
       - -Dvapi=disabled
       - -Dgst-gtuber=enabled
-    organize:
-      usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0: usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0
     prime:
       - -usr/include
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
+
   libdvdcss:
     after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
     source-tag: 1.4.2
+    source-depth: 1
     plugin: autotools
     autotools-configure-parameters:
       - --prefix=/usr
@@ -134,11 +149,10 @@ parts:
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
+
   libmpeg2:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
-    build-environment:
-     # - LDFLAGS: $CRAFT_PART_STAGE/usr/include:$LDFLAGS
     autotools-configure-parameters:
       - --prefix=/usr
       - --enable-shared
@@ -155,6 +169,7 @@ parts:
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
+
   #liba52:
   #  after: [libmpeg2]
   #  source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
@@ -174,6 +189,7 @@ parts:
     after: [libmpeg2, ffmpeg, x264]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: 1.20.2
+    source-depth: 1
     source-submodules: []
     plugin: meson
     build-environment:
@@ -319,7 +335,6 @@ parts:
       - ocl-icd-libopencl1
       - on amd64:
         - libmfx1
-
     stage:
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libavcodec*
       - -usr/lib/$CRAFT_ARCH_TRIPLET/libavutil*
@@ -354,12 +369,14 @@ parts:
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
       - -usr/include
+
   clapper:
-    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, ffmpeg ]
+    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, ffmpeg ]
     # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
-    source-tag: $SNAPCRAFT_PROJECT_VERSION
+    source-tag: '0.5.2'
+    source-depth: 1
     build-environment:
       - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
     meson-parameters:
@@ -374,6 +391,8 @@ parts:
       - libdvdnav-dev
       - libass-dev
       - libuchardet-dev
+    stage-packages:
+      - libva2
     #override-build: |
     #  set -eux
     #  meson $CRAFT_PART_SRC --prefix=/snap/clapper/current/usr -Dc_args='"-DHAVE_GST_PATCHES=1"'
@@ -386,6 +405,7 @@ parts:
     organize:
       snap/clapper/current: .
     parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
+
   deps:
     plugin: nil
     stage-packages:
@@ -427,9 +447,10 @@ slots:
 apps:
   clapper:
     command: usr/bin/com.github.rafostar.Clapper
+    command-chain:
+      - launcher
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
-    environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$GST_PLUGIN_PATH
+    environment: 
       GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
       LD_LIBRARY_PATH: $SNAP/usr/lib:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$LD_LIBRARY_PATH
       GDK_DEBUG: portals
