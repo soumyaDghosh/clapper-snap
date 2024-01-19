@@ -2,18 +2,25 @@ name: clapper
 base: core22 
 grade: stable 
 confinement: strict
-icon: com.github.rafostar.Clapper.svg
 adopt-info: clapper
+compression: lzo
 architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
+
+
+lint:
+  ignore:
+    - classic
+    - library
 
 parts:
   x264:
     plugin: autotools
     source: https://salsa.debian.org/multimedia-team/x264.git
     source-branch: 'upstream/0.164.3095+gitbaee400'
+    source-depth: 1
     autotools-configure-parameters:
       - --prefix=/usr
       - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
@@ -21,21 +28,18 @@ parts:
       - --enable-shared
       - --enable-strip
     build-packages:
-      - libva-dev
       - nasm
     prime:
       - -usr/lib/*/pkgconfig
       - -usr/include
       - -usr/share
-  ffmpeg:
-    # WORKAROUND:
-    # Build from source because the ffmpeg package installs libraries as dependencies
-    # that conflict with the Gnome extension
+
+  ffmpeg: 
     plugin: autotools
     source: https://git.ffmpeg.org/ffmpeg.git
     source-branch: 'n4.4'
+    source-depth: 1
     autotools-configure-parameters:
-      # WORKAROUND: Install to /usr instead of /usr/local because it's not in search paths
       - --prefix=/usr
       - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
       - --disable-debug
@@ -60,6 +64,7 @@ parts:
       - -usr/share
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
+
   #gtk4:
   #  after: [gstreamer]
   #  plugin: meson
@@ -102,31 +107,36 @@ parts:
   #    - -usr/bin/gtk4-encode-symbolic-svg
   #  organize:
   #    usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0
+
   gtuber:
     after: [gstreamer]
     source: https://github.com/Rafostar/gtuber.git
+    source-commit: "fb83a368149e6cccc4bce2d3f84cdf4f0e6b3c22"
+    source-depth: 1
     plugin: meson
     build-environment:
-      - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+      - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}:$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig
     meson-parameters:
-      - --prefix=/usr
+      - --prefix=/snap/clapper/current/usr
       - -Dintrospection=disabled
       - -Dvapi=disabled
       - -Dgst-gtuber=enabled
     organize:
-      usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0: usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0
+      snap/clapper/current: .
     prime:
       - -usr/include
-      - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
+
   libdvdcss:
     after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
     source-tag: 1.4.2
+    source-depth: 1
     plugin: autotools
     autotools-configure-parameters:
       - --prefix=/usr
+      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
       - --enable-shared
       - --disable-static
     prime:
@@ -134,20 +144,22 @@ parts:
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
+
   libmpeg2:
     source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
     plugin: autotools
-    build-environment:
-     # - LDFLAGS: $CRAFT_PART_STAGE/usr/include:$LDFLAGS
     autotools-configure-parameters:
       - --prefix=/usr
+      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
       - --enable-shared
       - --disable-static
     override-pull: |
       craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/libmpeg2-inline.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/libmpeg2-inline.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/60_arm-private-symbols.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/61_global-symbol-test.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/65_arm-test-with-compiler.patch
     build-packages:
-      - ffmpeg
       - libxext-dev
     prime:
       - -usr/bin/*mpeg2*
@@ -155,30 +167,34 @@ parts:
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
-  #liba52:
-  #  after: [libmpeg2]
-  #  source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
-  #  plugin: autotools
-  #  override-pull: |
-  #    craftctl default
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
-  #  autotools-configure-parameters:
-  #    - --prefix=/usr
-  #    - --enable-shared
-  #    - --disable-static
+
+  liba52:
+   after: [libmpeg2]
+   source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
+   plugin: autotools
+   override-pull: |
+     craftctl default
+     patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
+     patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
+     patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
+     patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
+   autotools-configure-parameters:
+     - --prefix=/usr
+     - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
+     - --enable-shared
+     - --disable-static
+   prime:
+     - -usr/include
+     - -usr/lib/*/pkgconfig
+     - -usr/share
 
   gstreamer:
-    after: [libmpeg2, ffmpeg, x264]
+    after: [libmpeg2, ffmpeg, x264, liba52]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: 1.20.2
+    source-depth: 1
     source-submodules: []
     plugin: meson
-    build-environment:
-      - LDFLAGS: -L/snap/gnome-42-2204-sdk/current/usr/lib -L/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET -L$CRAFT_STAGE/usr/lib -L$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET -L/usr/lib -L/usr/lib/$CRAFT_ARCH_TRIPLET
-      - GI_TYPELIB_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/girepository-1.0:/snap/gnome-42-2204-sdk/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
@@ -248,14 +264,10 @@ parts:
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-mpdparser-fix-missing-uri-query.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
-    override-prime: |
-      craftctl default
-      chmod 755 usr/libexec/gstreamer-1.0/gst-ptp-helper #trying to fix the permission error
     build-packages:
       - bison
       - flex
       - gettext
-      - liba52-0.7.4-dev
       - libass-dev
       - libffi-dev
       - libgles-dev
@@ -263,12 +275,10 @@ parts:
       - libgudev-1.0-dev
       - libjpeg-dev
       - libmount-dev
-      - libmpeg2-4-dev
       - libopengl-dev
       - liborc-0.4-dev
       - libpng-dev
       - libpcre3-dev
-      - libpulse-dev
       - libselinux1-dev
       - libtag1-dev
       - libva-dev
@@ -277,91 +287,21 @@ parts:
       - libxrandr-dev
       - libxv-dev
       - yasm
-      - zlib1g-dev
-    stage-packages:
-      - libaom3
-      - libblas3
-      - libcodec2-1.0
-      - libdav1d5
-      - libflite1
-      - libgfortran5
-      - libgme0
-      - libgsm1
-      - liblapack3
-      - liblilv-0-0
-      #- libmfx1
-      - libmysofa1
-      - libnorm1
-      - libnuma1
-      - libopenmpt0
-      - liborc-0.4-0
-      - libpgm-5.3-0
-      - libpocketsphinx3
-      - librabbitmq4
-      - librubberband2
-      - libserd-0-0
-      - libshine3
-      - libsnappy1v5
-      - libsodium23
-      - libsord-0-0
-      - libsoxr0
-      - libsphinxbase3
-      - libsratom-0-0
-      - libsrt1.4-gnutls
-      - libssh-gcrypt-4
-      - libudfread0
-      - libvdpau1
-      - libvidstab1.1
-      - libx264-163
-      - libx265-199
-      - libxv1
-      - libxvidcore4
-      - ocl-icd-libopencl1
-      - on amd64:
-        - libmfx1
-
-    stage:
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libavcodec*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libavutil*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libbluray*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libbs2b*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libchromaprint*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libflite*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libgme*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libicu*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/liblilv*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libmfx*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libmysofa*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libopenmpt*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/liborc-test-0.4*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libpocketsphinx*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libpostproc*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/librabbitmq*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/librubberband*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libsphinxad*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libsrt-gnutls*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libssh-gcrypt*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libswresample*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libswscale*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libtheora*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libvidstab*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libzimg*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libzmq*
-      - -usr/lib/$CRAFT_ARCH_TRIPLET/libzvbi-chains*
-      - -usr/lib/*/gdk-pixbuf-2.0
+      - zlib1g-dev 
     prime:
-      - -usr/lib/pkgconfig
+      - -usr/bin
+      - -usr/libexec
+      - -usr/lib/*/pkgconfig
       - -usr/share/man/*
       - -usr/share/gtk-doc/html/*
       - -usr/include
+
   clapper:
     after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, ffmpeg ]
-    # See 'snapcraft plugins'
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
     source-tag: $SNAPCRAFT_PROJECT_VERSION
-    build-environment:
-      - PKG_CONFIG_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+    source-depth: 1
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="-DHAVE_GST_PATCHES=1"
@@ -386,10 +326,10 @@ parts:
     organize:
       snap/clapper/current: .
     parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
+
   deps:
     plugin: nil
     stage-packages:
-      - liba52-0.7.4
       - libgudev-1.0-0
       - libsass1
       - sassc
@@ -398,13 +338,12 @@ parts:
       - libdvdnav4
       - libass9
       - libuchardet0
+      - libxv1
     prime:
-      - usr/lib/$CRAFT_ARCH_TRIPLET/liba52-0.7.4.so
       - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0
       - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0.3.0
       - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1
       - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1.0.0
-      - usr/bin/sassc
       - usr/lib/$CRAFT_ARCH_TRIPLET/libdv.so.4
       - usr/lib/$CRAFT_ARCH_TRIPLET/libdv.so.4.0.3
       - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdread.so.8
@@ -415,6 +354,8 @@ parts:
       - usr/lib/$CRAFT_ARCH_TRIPLET/libass.so.9.1.3
       - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0
       - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0.0.7
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libXv.so.1
+      - usr/lib/$CRAFT_ARCH_TRIPLET/libXv.so.1.0.0
 
 slots:
   clapper-mpris:
@@ -429,9 +370,8 @@ apps:
     command: usr/bin/com.github.rafostar.Clapper
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
-      GST_PLUGIN_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gstreamer-1.0:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$GST_PLUGIN_PATH
-      GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/girepository-1.0:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0
-      LD_LIBRARY_PATH: $SNAP/usr/lib:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gtuber-0.0:$LD_LIBRARY_PATH
+      GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0:${GI_TYPELIB_PATH}
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:${LD_LIBRARY_PATH}
       GDK_DEBUG: portals
     common-id: com.github.rafostar.Clapper
     extensions: [ gnome ]
