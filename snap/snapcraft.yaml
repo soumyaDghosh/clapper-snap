@@ -264,6 +264,7 @@ parts:
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-mpdparser-fix-missing-uri-query.patch
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
+      sed -i 's|ISO_CODES_PREFIX |"/snap/clapper/current/gnome-platform/usr"|g' $CRAFT_PART_SRC/subprojects/gst-plugins-base/gst-libs/gst/tag/lang.c
     build-packages:
       - bison
       - flex
@@ -288,7 +289,6 @@ parts:
       - yasm
       - zlib1g-dev 
     prime:
-      - -usr/bin
       - -usr/libexec
       - -usr/lib/*/pkgconfig
       - -usr/share/man/*
