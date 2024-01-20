@@ -16,6 +16,12 @@ lint:
     - library
 
 parts:
+  launcher:
+    source: .
+    plugin: dump
+    prime:
+      - launcher
+
   x264:
     plugin: autotools
     source: https://salsa.debian.org/multimedia-team/x264.git
@@ -338,7 +344,9 @@ parts:
       - libass9
       - libuchardet0
       - libxv1
-    prime:
+      - vainfo
+      - gstreamer1.0-pipewire
+    stage:
       - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0
       - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0.3.0
       - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1
@@ -355,6 +363,8 @@ parts:
       - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0.0.7
       - usr/lib/$CRAFT_ARCH_TRIPLET/libXv.so.1
       - usr/lib/$CRAFT_ARCH_TRIPLET/libXv.so.1.0.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gstreamer-1.0/libgstpipewire.so
+      - usr/bin/vainfo
 
 slots:
   clapper-mpris:
@@ -367,6 +377,8 @@ slots:
 apps:
   clapper:
     command: usr/bin/com.github.rafostar.Clapper
+    command-chain:
+      - launcher
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
       GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0:${GI_TYPELIB_PATH}
