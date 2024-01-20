@@ -1,0 +1,6 @@
+#!/bin/bash
+unset GST_PLUGIN_PATH
+unset GST_PLUGIN_SYSTEM_PATH
+export GST_PLUGIN_SYSTEM_PATH=${SNAP}/usr/lib/${SNAP_LAUNCHER_ARCH_TRIPLET}/gstreamer-1.0
+export LIBVA_DRIVERS_PATH=${SNAP}/gnome-platform/usr/lib/${SNAP_LAUNCHER_ARCH_TRIPLET}/dri
+exec "$@"
