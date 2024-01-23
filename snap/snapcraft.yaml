@@ -152,7 +152,8 @@ parts:
       - -usr/share
 
   libmpeg2:
-    source: http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz
+    source: https://salsa.debian.org/multimedia-team/mpeg2dec.git
+    source-tag: 'debian/0.5.1-9'
     plugin: autotools
     autotools-configure-parameters:
       - --prefix=/usr
