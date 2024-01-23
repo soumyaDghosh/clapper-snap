@@ -305,14 +305,11 @@ parts:
     after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, ffmpeg ]
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
-    source-tag: $SNAPCRAFT_PROJECT_VERSION
+    source-tag: '0.5.2'
     source-depth: 1
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="-DHAVE_GST_PATCHES=1"
-    override-pull: |
-      craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/clapper_nvdec.patch
     build-packages:
       - libgudev-1.0-dev
       - libsass-dev
@@ -330,6 +327,7 @@ parts:
     #  ninja install
     override-pull: |
       craftctl default
+      patch -p1 < $CRAFT_PROJECT_DIR/clapper_nvdec.patch
       sed -i -e 's|@GJS@|/snap/clapper/current/gnome-platform/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
