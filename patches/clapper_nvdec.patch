@@ -1,0 +1,23 @@
+# In my personal testings I have found that even though nvdec works, it's not stable and reliable.
+# The flatpak counterpart, doesn't even recognise this plugin.
+# So, I reduced the ranks of these plugins by 4.
+
+diff --git a/lib/gst/clapper/gstclapper.c b/lib/gst/clapper/gstclapper.c
+index ae7f65c..27753a3 100644
+--- a/lib/gst/clapper/gstclapper.c
++++ b/lib/gst/clapper/gstclapper.c
+@@ -3553,10 +3553,10 @@ gst_clapper_prepare_gstreamer (void)
+   }
+   /* We do promise working HW accel out of box, so enable NVDEC too */
+   if (gst_clapper_has_plugin_with_features ("nvcodec")) {
+-    gst_clapper_set_feature_rank ("nvh264dec", rank + 4);
+-    gst_clapper_set_feature_rank ("nvh265dec", rank + 4);
+-    gst_clapper_set_feature_rank ("nvvp8dec", rank + 4);
+-    gst_clapper_set_feature_rank ("nvvp9dec", rank + 4);
++    gst_clapper_set_feature_rank ("nvh264dec", rank - 4);
++    gst_clapper_set_feature_rank ("nvh265dec", rank - 4);
++    gst_clapper_set_feature_rank ("nvvp8dec", rank - 4);
++    gst_clapper_set_feature_rank ("nvvp9dec", rank - 4);
+   }
+ 
+   /* After setting defaults, update them from ENV */

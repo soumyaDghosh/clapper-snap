@@ -310,6 +310,9 @@ parts:
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="-DHAVE_GST_PATCHES=1"
+    override-pull: |
+      craftctl default
+      patch -p1 < $CRAFT_PROJECT_DIR/clapper_nvdec.patch
     build-packages:
       - libgudev-1.0-dev
       - libsass-dev
