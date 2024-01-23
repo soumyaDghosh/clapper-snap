@@ -306,7 +306,7 @@ parts:
       - -usr/include
 
   clapper:
-    after: [ libmpeg2, gstreamer, gtuber, libdvdcss, liba52, ffmpeg ]
+    after: [gstreamer, gtuber, libdvdcss, ffmpeg]
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
     source-tag: '0.5.2'
