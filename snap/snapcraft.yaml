@@ -4,11 +4,15 @@ grade: stable
 confinement: strict
 adopt-info: clapper
 compression: lzo
+source-code: https://github.com/Rafostar/clapper
+website: https://rafostar.github.io/clapper
+issues: https://github.com/soumyaDghosh/clapper-snap/issues
+license: GPL-3.0
+
 architectures:
   - build-on: amd64
   - build-on: arm64
   - build-on: armhf
-
 
 lint:
   ignore:
@@ -102,8 +106,8 @@ parts:
   #    - libxml2-utils
   #  override-pull: |
   #    craftctl default
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/gtk4-respect-es-api.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/gtk4-disable-meson-gnome-post-install.patch
+  #    patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gtk4-respect-es-api.patch
+  #    patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gtk4-disable-meson-gnome-post-install.patch
   #  stage:
   #    - -usr/bin/wayland-scanner
   #    - -usr/lib/*/libwayland-client.so.0.20.0
@@ -163,10 +167,10 @@ parts:
   #     - --disable-static
   #   override-pull: |
   #     craftctl default
-  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/libmpeg2-inline.patch
-  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/60_arm-private-symbols.patch
-  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/61_global-symbol-test.patch
-  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/65_arm-test-with-compiler.patch
+  #     patch -p1 < ${{CRAFT_PROJECT_DIR}}/patches/libmpeg2-inline.patch
+  #     patch -p1 < ${{CRAFT_PROJECT_DIR}}/patches/60_arm-private-symbols.patch
+  #     patch -p1 < ${{CRAFT_PROJECT_DIR}}/patches/61_global-symbol-test.patch
+  #     patch -p1 < ${{CRAFT_PROJECT_DIR}}/patches/65_arm-test-with-compiler.patch
   #   build-packages:
   #     - libxext-dev
   #   prime:
@@ -182,10 +186,10 @@ parts:
   #  plugin: autotools
   #  override-pull: |
   #    craftctl default
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
-  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
+  #    patch -p1 < ${CRAFT_PROJECT_DIR}/patches/a52dec-0.7.4-rpath64.patch
+  #    patch -p1 < ${CRAFT_PROJECT_DIR}/patches/a52dec-configure-optflags.patch
+  #    patch -p1 < ${CRAFT_PROJECT_DIR}/patches/liba52-silence.patch
+  #    patch -p1 < ${CRAFT_PROJECT_DIR}/patches/liba52-prefer-pic.patch
   #  autotools-configure-parameters:
   #    - --prefix=/usr
   #    - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
@@ -261,18 +265,28 @@ parts:
       - -Dgst-plugins-ugly:mpeg2dec=enabled
     override-pull: |
       craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-libav-stop-caching-codecs.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-do-not-set-backbuffer.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-glupload-filter-formats.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-do-not-use-drm-modifiers-on-desktop.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-base-autodetect-subtitle-text-encoding.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-good-matroska-fix-attachments-detection.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-good-matroska-support-seek-nearest-keyframe.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-sidx-range-download.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-mpdparser-fix-missing-uri-query.patch
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
-      sed -i 's|ISO_CODES_PREFIX |"/snap/clapper/current/gnome-platform/usr"|g' $CRAFT_PART_SRC/subprojects/gst-plugins-base/gst-libs/gst/tag/lang.c
+      echo "Patching Gstreamer libav | total 1 patch"
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-libav-stop-caching-codecs.patch
+      sed -i 's|/app/lib|/snap/clapper/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}|' ${CRAFT_PART_SRC}/subprojects/gst-libav/ext/libav/gstav.c
+
+      echo "Patching Gstreamer base | total 3 patches"
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-base-glupload-filter-formats.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-base-do-not-use-drm-modifiers-on-desktop.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-base-autodetect-subtitle-text-encoding.patch
+
+      echo "Patching Gstreamer good | total 4 patches"
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-good-matroska-fix-attachments-detection.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-good-matroska-support-seek-nearest-keyframe.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-good-dashdemux2-improve-initial-representation-selection.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-good-dashdemux2-play-last-subfragment.patch
+
+      echo "Patching Gstreamer bad | total 4 patches"
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-dashdemux-sidx-range-download.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-dvdspu-add-overlay-composition-support.patch
+      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
+
+      sed -i 's|ISO_CODES_PREFIX |"/snap/clapper/current/gnome-platform/usr"|g' ${CRAFT_PART_SRC}/subprojects/gst-plugins-base/gst-libs/gst/tag/lang.c
     build-packages:
       - liba52-0.7.4-dev
       - libmpeg2-4-dev
@@ -331,7 +345,7 @@ parts:
     #  ninja install
     override-pull: |
       craftctl default
-      #patch -p1 < $CRAFT_PROJECT_DIR/patches/clapper_nvdec.patch
+      #patch -p1 < ${CRAFT_PROJECT_DIR}/patches/clapper_nvdec.patch
       sed -i -e 's|@GJS@|/snap/clapper/current/gnome-platform/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
@@ -384,6 +398,7 @@ slots:
     interface: dbus
     bus: session
     name: com.github.rafostar.Clapper
+
 apps:
   clapper:
     command: usr/bin/com.github.rafostar.Clapper
