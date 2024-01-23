@@ -327,7 +327,7 @@ parts:
     #  ninja install
     override-pull: |
       craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/clapper_nvdec.patch
+      patch -p1 < $CRAFT_PROJECT_DIR/patches/clapper_nvdec.patch
       sed -i -e 's|@GJS@|/snap/clapper/current/gnome-platform/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
