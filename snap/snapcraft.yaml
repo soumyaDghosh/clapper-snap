@@ -22,23 +22,23 @@ parts:
     prime:
       - launcher
 
-  x264:
-    plugin: autotools
-    source: https://salsa.debian.org/multimedia-team/x264.git
-    source-branch: 'upstream/0.164.3095+gitbaee400'
-    source-depth: 1
-    autotools-configure-parameters:
-      - --prefix=/usr
-      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
-      - --disable-cli
-      - --enable-shared
-      - --enable-strip
-    build-packages:
-      - nasm
-    prime:
-      - -usr/lib/*/pkgconfig
-      - -usr/include
-      - -usr/share
+  # x264:
+  #   plugin: autotools
+  #   source: https://salsa.debian.org/multimedia-team/x264.git
+  #   source-branch: 'upstream/0.164.3095+gitbaee400'
+  #   source-depth: 1
+  #   autotools-configure-parameters:
+  #     - --prefix=/usr
+  #     - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
+  #     - --disable-cli
+  #     - --enable-shared
+  #     - --enable-strip
+  #   build-packages:
+  #     - nasm
+  #   prime:
+  #     - -usr/lib/*/pkgconfig
+  #     - -usr/include
+  #     - -usr/share
 
   ffmpeg: 
     plugin: autotools
@@ -47,7 +47,7 @@ parts:
     source-depth: 1
     autotools-configure-parameters:
       - --prefix=/usr
-      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
+      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
       - --disable-debug
       - --disable-doc
       - --disable-static
@@ -121,7 +121,7 @@ parts:
     source-depth: 1
     plugin: meson
     build-environment:
-      - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}:$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig
+      - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}:$CRAFT_STAGE/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dintrospection=disabled
@@ -135,70 +135,71 @@ parts:
       - -usr/share
 
   libdvdcss:
-    after: [libmpeg2]
     source: https://code.videolan.org/videolan/libdvdcss.git
     source-tag: 1.4.2
     source-depth: 1
     plugin: autotools
     autotools-configure-parameters:
       - --prefix=/usr
-      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
+      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
       - --enable-shared
       - --disable-static
-    prime:
-      - -usr/include
-      - -usr/lib/pkgconfig
-      - -usr/lib/*/pkgconfig
-      - -usr/share
-
-  libmpeg2:
-    source: https://salsa.debian.org/multimedia-team/mpeg2dec.git
-    source-tag: 'debian/0.5.1-9'
-    plugin: autotools
-    autotools-configure-parameters:
-      - --prefix=/usr
-      - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
-      - --enable-shared
-      - --disable-static
-    override-pull: |
-      craftctl default
-      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/libmpeg2-inline.patch
-      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/60_arm-private-symbols.patch
-      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/61_global-symbol-test.patch
-      patch -p1 < ${CRAFT_PROJECT_DIR}/patches/65_arm-test-with-compiler.patch
     build-packages:
-      - libxext-dev
+      - libmpeg2-4-dev
     prime:
-      - -usr/bin/*mpeg2*
       - -usr/include
       - -usr/lib/pkgconfig
       - -usr/lib/*/pkgconfig
       - -usr/share
 
-  liba52:
-   after: [libmpeg2]
-   source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
-   plugin: autotools
-   override-pull: |
-     craftctl default
-     patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
-     patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
-     patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
-     patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
-   autotools-configure-parameters:
-     - --prefix=/usr
-     - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
-     - --enable-shared
-     - --disable-static
-   prime:
-     - -usr/include
-     - -usr/lib/*/pkgconfig
-     - -usr/share
+  # libmpeg2:
+  #   source: https://salsa.debian.org/multimedia-team/mpeg2dec.git
+  #   source-tag: 'debian/0.5.1-9'
+  #   plugin: autotools
+  #   autotools-configure-parameters:
+  #     - --prefix=/usr
+  #     - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
+  #     - --enable-shared
+  #     - --disable-static
+  #   override-pull: |
+  #     craftctl default
+  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/libmpeg2-inline.patch
+  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/60_arm-private-symbols.patch
+  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/61_global-symbol-test.patch
+  #     patch -p1 < ${CRAFT_PROJECT_DIR}/patches/65_arm-test-with-compiler.patch
+  #   build-packages:
+  #     - libxext-dev
+  #   prime:
+  #     - -usr/bin/*mpeg2*
+  #     - -usr/include
+  #     - -usr/lib/pkgconfig
+  #     - -usr/lib/*/pkgconfig
+  #     - -usr/share
+
+  # liba52:
+  #  after: [libmpeg2]
+  #  source: http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
+  #  plugin: autotools
+  #  override-pull: |
+  #    craftctl default
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-0.7.4-rpath64.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/a52dec-configure-optflags.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-silence.patch
+  #    patch -p1 < $CRAFT_PROJECT_DIR/patches/liba52-prefer-pic.patch
+  #  autotools-configure-parameters:
+  #    - --prefix=/usr
+  #    - --libdir=/usr/lib/${CRAFT_ARCH_TRIPLET}
+  #    - --enable-shared
+  #    - --disable-static
+  #  prime:
+  #    - -usr/include
+  #    - -usr/lib/*/pkgconfig
+  #    - -usr/share
 
   gstreamer:
-    after: [libmpeg2, ffmpeg, x264, liba52]
+    after: [ffmpeg, libdvdcss]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
-    source-tag: 1.20.2
+    source-tag: 1.22.8
     source-depth: 1
     source-submodules: []
     plugin: meson
@@ -273,6 +274,8 @@ parts:
       patch -p1 < $CRAFT_PROJECT_DIR/patches/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
       sed -i 's|ISO_CODES_PREFIX |"/snap/clapper/current/gnome-platform/usr"|g' $CRAFT_PART_SRC/subprojects/gst-plugins-base/gst-libs/gst/tag/lang.c
     build-packages:
+      - liba52-0.7.4-dev
+      - libmpeg2-4-dev
       - bison
       - flex
       - gettext
@@ -328,15 +331,17 @@ parts:
     #  ninja install
     override-pull: |
       craftctl default
-      patch -p1 < $CRAFT_PROJECT_DIR/patches/clapper_nvdec.patch
+      #patch -p1 < $CRAFT_PROJECT_DIR/patches/clapper_nvdec.patch
       sed -i -e 's|@GJS@|/snap/clapper/current/gnome-platform/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
-    parse-info: [ usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml ]
+    parse-info: [usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml]
 
   deps:
     plugin: nil
     stage-packages:
+      - liba52-0.7.4
+      - libmpeg2-4
       - libgudev-1.0-0
       - libsass1
       - sassc
@@ -346,27 +351,30 @@ parts:
       - libass9
       - libuchardet0
       - libxv1
-      - vainfo
       - gstreamer1.0-pipewire
     stage:
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libgudev-1.0.so.0.3.0
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libsass.so.1.0.0
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libdv.so.4
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libdv.so.4.0.3
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdread.so.8
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdread.so.8.0.0
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdnav.so.4
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libdvdnav.so.4.3.0
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libass.so.9
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libass.so.9.1.3
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libuchardet.so.0.0.7
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libXv.so.1
-      - usr/lib/$CRAFT_ARCH_TRIPLET/libXv.so.1.0.0
-      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gstreamer-1.0/libgstpipewire.so
-      - usr/bin/vainfo
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/liba52-0.7.4.so
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libmpeg2.so.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libmpeg2.so.0.1.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libmpeg2convert.so.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libmpeg2convert.so.0.0.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libgudev-1.0.so.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libgudev-1.0.so.0.3.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libsass.so.1
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libsass.so.1.0.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libdv.so.4
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libdv.so.4.0.3
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libdvdread.so.8
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libdvdread.so.8.0.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libdvdnav.so.4
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libdvdnav.so.4.3.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libass.so.9
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libass.so.9.1.3
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libuchardet.so.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libuchardet.so.0.0.7
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libXv.so.1
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libXv.so.1.0.0
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}_BUILD_FOR}/gstreamer-1.0/libgstpipewire.so
 
 slots:
   clapper-mpris:
@@ -383,8 +391,8 @@ apps:
       - launcher
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
-      GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET/gjs/girepository-1.0:${GI_TYPELIB_PATH}
-      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:${LD_LIBRARY_PATH}
+      GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gjs/girepository-1.0:${GI_TYPELIB_PATH}
+      LD_LIBRARY_PATH: $SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:${LD_LIBRARY_PATH}
       GDK_DEBUG: portals
     common-id: com.github.rafostar.Clapper
     extensions: [ gnome ]
