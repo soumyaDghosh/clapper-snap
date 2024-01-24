@@ -20,6 +20,21 @@ lint:
     - library
 
 parts:
+  meson-deps:
+    plugin: nil
+    source: https://github.com/ylatuya/meson.git
+    source-branch: 'fix-uninstalled'
+    source-depth: 1
+    override-build: |
+      python3 -m pip install .
+      mkdir -p $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages
+      rm -rf $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/meson*
+      python3 -m pip install --target=$CRAFT_PART_INSTALL/usr .
+      mv $CRAFT_PART_INSTALL/usr/meson* $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/
+      sed -i "s%^#!/usr/bin/python3$%#!/usr/bin/env python3%g" $CRAFT_PART_INSTALL/usr/bin/meson
+    build-packages:
+      - python3-pip
+
   launcher:
     source: .
     plugin: dump
@@ -119,12 +134,13 @@ parts:
   #    usr/lib/gtk-4.0: usr/lib/$CRAFT_ARCH_TRIPLET/gtk-4.0
 
   gtuber:
-    after: [gstreamer]
+    after: [gstreamer, meson-deps]
     source: https://github.com/Rafostar/gtuber.git
     source-commit: "fb83a368149e6cccc4bce2d3f84cdf4f0e6b3c22"
     source-depth: 1
     plugin: meson
     build-environment:
+      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
       - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}:$CRAFT_STAGE/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
@@ -201,12 +217,14 @@ parts:
   #    - -usr/share
 
   gstreamer:
-    after: [ffmpeg, libdvdcss]
+    after: [ffmpeg, libdvdcss, meson-deps]
     source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
     source-tag: 1.22.8
     source-depth: 1
     source-submodules: []
     plugin: meson
+    build-environment:
+      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
@@ -325,6 +343,8 @@ parts:
     source: https://github.com/Rafostar/clapper.git
     source-tag: '0.5.2'
     source-depth: 1
+    build-environment:
+      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dc_args="-DHAVE_GST_PATCHES=1"
@@ -388,7 +408,7 @@ parts:
       - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libuchardet.so.0.0.7
       - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libXv.so.1
       - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libXv.so.1.0.0
-      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}_BUILD_FOR}/gstreamer-1.0/libgstpipewire.so
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gstreamer-1.0/libgstpipewire.so
 
 slots:
   clapper-mpris:
