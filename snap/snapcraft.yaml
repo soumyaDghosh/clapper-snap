@@ -23,7 +23,7 @@ parts:
   meson-deps:
     plugin: nil
     source: https://github.com/ylatuya/meson.git
-    source-branch: 'fix-uninstalled'
+    source-branch: 'fix-1181'
     source-depth: 1
     override-build: |
       python3 -m pip install .
@@ -223,8 +223,9 @@ parts:
     source-depth: 1
     source-submodules: []
     plugin: meson
-    build-environment:
+    build-environment: 
       - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
+      - PKG_CONFIG_PATH: ${CRAFT_PART_BUILD}/meson-uninstalled:${PKG_CONFIG_PATH}
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
