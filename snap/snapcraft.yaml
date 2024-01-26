@@ -306,6 +306,9 @@ parts:
       patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
 
       sed -i 's|ISO_CODES_PREFIX |"/snap/clapper/current/gnome-platform/usr"|g' ${CRAFT_PART_SRC}/subprojects/gst-plugins-base/gst-libs/gst/tag/lang.c
+    override-build: |
+      alias meson=${CRAFT_STAGE}/usr/bin/meson
+      craftctl default
     build-packages:
       - liba52-0.7.4-dev
       - libmpeg2-4-dev
