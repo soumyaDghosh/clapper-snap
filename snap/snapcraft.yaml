@@ -1,5 +1,5 @@
 name: clapper 
-base: core22 
+base: core24
 grade: stable 
 confinement: strict
 adopt-info: clapper
@@ -9,10 +9,10 @@ website: https://rafostar.github.io/clapper
 issues: https://github.com/soumyaDghosh/clapper-snap/issues
 license: GPL-3.0
 
-architectures:
-  - build-on: amd64
-  - build-on: arm64
-  - build-on: armhf
+platforms:
+  amd64:
+  arm64:
+  armhf:
 
 lint:
   ignore:
@@ -22,14 +22,14 @@ lint:
 parts:
   meson-deps:
     plugin: nil
-    source: https://github.com/ylatuya/meson.git
-    source-branch: 'fix-1181'
+    source: https://github.com/mesonbuild/meson.git
+    source-tag: '1.4.1'
     source-depth: 1
     override-build: |
-      python3 -m pip install .
+      python3 -m pip install --break-system-packages .
       mkdir -p $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages
       rm -rf $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/meson*
-      python3 -m pip install --target=$CRAFT_PART_INSTALL/usr .
+      python3 -m pip install --break-system-packages --target=$CRAFT_PART_INSTALL/usr .
       mv $CRAFT_PART_INSTALL/usr/meson* $CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/
       sed -i "s%^#!/usr/bin/python3$%#!/usr/bin/env python3%g" $CRAFT_PART_INSTALL/usr/bin/meson
     build-packages:
@@ -62,7 +62,7 @@ parts:
   ffmpeg: 
     plugin: autotools
     source: https://git.ffmpeg.org/ffmpeg.git
-    source-branch: 'n4.4'
+    source-tag: 'n7.0'
     source-depth: 1
     autotools-configure-parameters:
       - --prefix=/usr
@@ -136,12 +136,9 @@ parts:
   gtuber:
     after: [gstreamer, meson-deps]
     source: https://github.com/Rafostar/gtuber.git
-    source-commit: "fb83a368149e6cccc4bce2d3f84cdf4f0e6b3c22"
+    source-commit: "f5a64d442c18ae2fa732a851ccb4859c8a45d944"
     source-depth: 1
     plugin: meson
-    build-environment:
-      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
-      - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}:$CRAFT_STAGE/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig
     meson-parameters:
       - --prefix=/snap/clapper/current/usr
       - -Dintrospection=disabled
@@ -217,16 +214,16 @@ parts:
   #    - -usr/share
 
   gstreamer:
-    after: [ffmpeg, libdvdcss, meson-deps]
-    source: https://gitlab.freedesktop.org/gstreamer/gstreamer.git
-    source-tag: 1.22.8
+    after: [libdvdcss, meson-deps, ffmpeg]
+    source: https://github.com/GStreamer/gstreamer.git
+    source-tag: '1.22.8'
     source-depth: 1
     source-submodules: []
     plugin: meson
-    build-environment: 
-      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
+    build-environment:
+      #- GI_SCANNER_DEBUG: 'save-temps'
       - PYTHONPATH: ${CRAFT_STAGE}/usr/lib/python3/dist-packages:${PYTHONPATH}
-      - PKG_CONFIG_PATH: ${CRAFT_PART_BUILD}/meson-uninstalled:${PKG_CONFIG_PATH}
+      #- PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig:${PKG_CONFIG_PATH}
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
@@ -259,6 +256,7 @@ parts:
       - -Dgst-plugins-base:gobject-cast-checks=disabled
       - -Dgst-plugins-base:glib-asserts=disabled
       - -Dgst-plugins-base:glib-checks=disabled
+      - -Dgst-plugins-base:gl=enabled
       - -Dgst-plugins-base:gl_api=opengl,gles2
       - -Dgst-plugins-base:gl_platform=egl,glx
       - -Dgst-plugins-good:gobject-cast-checks=disabled
@@ -287,7 +285,6 @@ parts:
       craftctl default
       echo "Patching Gstreamer libav | total 1 patch"
       patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-libav-stop-caching-codecs.patch
-      sed -i 's|/app/lib|/snap/clapper/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}|' ${CRAFT_PART_SRC}/subprojects/gst-libav/ext/libav/gstav.c
 
       echo "Patching Gstreamer base | total 3 patches"
       patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-base-glupload-filter-formats.patch
@@ -305,13 +302,18 @@ parts:
       patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-dashdemux-improve-initial-representation-selection.patch
       patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-dvdspu-add-overlay-composition-support.patch
       patch -p1 < ${CRAFT_PROJECT_DIR}/patches/gstreamer/gst-plugins-bad-workaround-playbin2-missing-videometa.patch
-
-      sed -i 's|ISO_CODES_PREFIX |"/snap/clapper/current/gnome-platform/usr"|g' ${CRAFT_PART_SRC}/subprojects/gst-plugins-base/gst-libs/gst/tag/lang.c
     build-packages:
       - liba52-0.7.4-dev
       - libmpeg2-4-dev
       - bison
       - flex
+      - libx11-xcb-dev
+      - libgl-dev
+      - libgles-dev
+      - libopengl-dev
+      - libdrm-dev
+      - libgbm-dev
+      - libglx-dev
       - gettext
       - libass-dev
       - libffi-dev
@@ -340,10 +342,10 @@ parts:
       - -usr/include
 
   clapper:
-    after: [gstreamer, gtuber, libdvdcss, ffmpeg]
+    after: [gstreamer, gtuber, libdvdcss, meson-deps]
     plugin: meson
     source: https://github.com/Rafostar/clapper.git
-    source-tag: '0.5.2'
+    source-tag: '0.6.0'
     source-depth: 1
     build-environment:
       - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
@@ -365,10 +367,6 @@ parts:
     #  ninja
     #  DESTDIR=$CRAFT_PART_INSTALL
     #  ninja install
-    override-pull: |
-      craftctl default
-      #patch -p1 < ${CRAFT_PROJECT_DIR}/patches/clapper_nvdec.patch
-      sed -i -e 's|@GJS@|/snap/clapper/current/gnome-platform/usr/bin/gjs|g' bin/com.github.rafostar.Clapper.in
     organize:
       snap/clapper/current: .
     parse-info: [usr/share/metainfo/com.github.rafostar.Clapper.metainfo.xml]
@@ -412,6 +410,25 @@ parts:
       - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libXv.so.1.0.0
       - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gstreamer-1.0/libgstpipewire.so
 
+  cleanup:
+    after:  # Make this part run last; list all your other parts here
+      - deps
+      - clapper
+      - ffmpeg
+      - gstreamer
+      - gtuber
+      - libdvdcss
+      - meson-deps
+    plugin: nil
+    build-snaps:  # List all content-snaps and base snaps you're using here
+      - core22
+      - gnome-46-2404
+    override-prime: |
+      set -eux
+      for snap in "core22" "gnome-46-2404"; do
+          cd "/snap/$snap/current" && find . -type f,l -exec rm -rf "$CRAFT_PRIME/{}" \;
+      done
+
 slots:
   clapper-mpris:
     interface: mpris
@@ -429,7 +446,7 @@ apps:
     desktop: usr/share/applications/com.github.rafostar.Clapper.desktop
     environment:
       GI_TYPELIB_PATH: $SNAP/gnome-platform/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gjs/girepository-1.0:${GI_TYPELIB_PATH}
-      LD_LIBRARY_PATH: $SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:${LD_LIBRARY_PATH}
+      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:$SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:${LD_LIBRARY_PATH}
       GDK_DEBUG: portals
     common-id: com.github.rafostar.Clapper
     extensions: [ gnome ]
