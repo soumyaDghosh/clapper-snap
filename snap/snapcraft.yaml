@@ -22,8 +22,7 @@ lint:
 parts:
   meson-deps:
     plugin: nil
-    source: https://github.com/ylatuya/meson.git
-    source-branch: 'fix-1181'
+    source: https://github.com/soumyaDghosh/meson.git
     source-depth: 1
     override-build: |
       python3 -m pip install --break-system-packages .
@@ -223,6 +222,7 @@ parts:
     build-environment:
       #- GI_SCANNER_DEBUG: 'save-temps'
       - PYTHONPATH: ${CRAFT_STAGE}/usr/lib/python3/dist-packages:${PYTHONPATH}
+      - PKG_CONFIG_PATH: ${CRAFT_PART_BUILD}/meson-uninstalled:${PKG_CONFIG_PATH}
       #- PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig:${PKG_CONFIG_PATH}
     meson-parameters:
       - --prefix=/usr
