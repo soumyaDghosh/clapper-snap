@@ -22,8 +22,8 @@ lint:
 parts:
   meson-deps:
     plugin: nil
-    source: https://github.com/mesonbuild/meson.git
-    source-tag: '1.4.1'
+    source: https://github.com/ylatuya/meson.git
+    source-branch: 'fix-1181'
     source-depth: 1
     override-build: |
       python3 -m pip install --break-system-packages .
