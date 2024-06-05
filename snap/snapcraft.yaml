@@ -221,6 +221,7 @@ parts:
     plugin: meson
     build-environment:
       #- GI_SCANNER_DEBUG: 'save-temps'
+      - PATH: ${CRAFT_STAGE}/usr/bin:${PATH}
       - PYTHONPATH: ${CRAFT_STAGE}/usr/lib/python3/dist-packages:${PYTHONPATH}
       - PKG_CONFIG_PATH: ${CRAFT_PART_BUILD}/meson-uninstalled:${PKG_CONFIG_PATH}
       #- PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/pkgconfig:${PKG_CONFIG_PATH}
